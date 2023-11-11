@@ -1,0 +1,24 @@
+{
+  "name": "siasus_pa",
+  "version": "0.1.0",
+  "description": "A draft how to work with SIASUS data wisely.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc && cp LICENSE ./dist/LICENSE && cp README.md ./dist/README.md && cp package.json ./dist/package.json && cp -r ./addon ./dist/addon",
+    "publish": "npm publish ./dist --access=public",
+    "test": "npm run build && node --test --trace-warnings --experimental-fetch",
+    "main": "npm run build && node --max-old-space-size=4096 ./dist/main.js"
+  },
+  "author": "Pedro dos Santos",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@codeplaydata/adapters": "^0.8.0",
+    "basic-ftp": "^5.0.3",
+    "dbffile": "^1.9.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.5.6",
+    "typescript": "^5.2.2"
+  }
+}

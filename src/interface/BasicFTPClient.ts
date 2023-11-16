@@ -19,6 +19,7 @@
 import { Client as FtpClient } from "basic-ftp";
 import { CouldNotConnect } from "./error/CouldNotConnect.js";
 import { FTPClient } from "./FTPClient.js";
+import { statSync } from "node:fs";
 
 /** The Ftp client adapter that uses the basic-ftp library. */
 export class BasicFTPClient implements FTPClient {
@@ -60,8 +61,12 @@ export class BasicFTPClient implements FTPClient {
      *  @returns { Promise<FTPResponse> }
      */
     async download(dest: string, from: string) {
-        console.log(from)
-        return await this.client.downloadTo(dest, from)
+        try {
+            statSync(dest);
+            return
+        } catch(error: any) {
+            return await this.client.downloadTo(dest, from)
+        }
     }
 
     /**

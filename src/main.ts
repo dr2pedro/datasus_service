@@ -19,6 +19,7 @@
 import { MongoDBCollection, database } from "@codeplaydata/adapters";
 import { ICD10 } from "./app/ICD10.js";
 import { BasicFTPClient } from "./interface/BasicFTPClient.js";
+import { readFileSync } from "node:fs";
 import { SIHFTPGateway } from "./interface/SIH/SIHFTPGateway.js";
 import { SIH } from "./app/SIH/SIH.js";
 import { AIHSIHManyPrimaryConditionsCriteria } from "./interface/SIH/filter/SIHManyPrimaryDiseaseCriteria.js";
@@ -36,95 +37,102 @@ import { NotificationSINANSingleCityCriteria } from "./interface/SINAN/filter/SI
 import { SIM } from "./app/SIM/SIM.js";
 import { SIMFTPGateway } from "./interface/SIM/SIMFTPGateway.js";
 import { DOSIMManyPrimaryConditionsCriteria } from "./interface/SIM/filter/SIMManyPrimaryDiseaseCriteria.js";
+import { BPASIAManyCitiesCriteria } from "./interface/SIA/filter/SIAManyCityCriteria.js";
+import { AIHSIHManyCitiesCriteria } from "./interface/SIH/filter/SIHManyCityCriteria.js";
+import { DOSIMManyCitiesCriteria } from "./interface/SIM/filter/SIMManyCitiesCriteria.js";
 
 const ftp = await BasicFTPClient.connect('ftp.datasus.gov.br');
 const cid = await ICD10.load();
-cid.block('T', { start: '36', end: '509'});
-const city = '330455';
+cid
+    .block('I')
+    .block('F')
+    .block('C', { start: '00', end: '979'})
+    .block('J', { start: '30', end: '989'})
+    .block('E', { start: '10', end: '149'})
 
-/* 
-sihsus: {
-    const storage = database.document.mongo('mongodb://localhost:27017/', 'sihsus', 'iexo');
-    const insert = async (record: any) => {
-        await storage.collection.insertOne(record);
-    };
-    const gateway = await SIHFTPGateway.getInstanceOf(ftp!);
-    const sih = SIH.init(gateway, 5);
+const citiesJson = readFileSync('./assets/gd_cities.json');
+const cities = JSON.parse(citiesJson.toString());
 
-    await sih.subset({
-        src: "RD",
-        states: ['RJ'],
-        period: {
-            start: {
-                year: 2020,
-                month: '01'
-            },
-            end: {
-                year: 2021,
-                month: '12'
-            }
-        }
-    })
-    
-    const conditionFilter = AIHSIHManyPrimaryConditionsCriteria.set(cid.list);
-    const cityFilter = AIHSIHSingleCityCriteria.set(city);
-
-    sih.exec('file', [conditionFilter, cityFilter], insert, './dist/app/SIH/SIHJob.js')
-}
-*/
 /* 
 siasus: {
-    const storage = database.document.mongo('mongodb://localhost:27017/', 'siasus', 'iexo');
-    const insert = async (record: any) => {
-        await storage.collection.insertOne(record);
-    };
+    const storage = database.document.mongo('mongodb://localhost:27017/', 'siasus', 'dcnt');
+    const insert = async (record: any) => await storage.collection.insertOne(record);
     const gateway = await SIAFTPGateway.getInstanceOf(ftp!);
-    const sia = SIA.init(gateway, 5);
+    const sia = SIA.init(gateway, 3);
     await sia.subset({
         src: 'PA',
-        states: ['RJ'],
+        states: ['RJ', 'ES', 'MG', 'SP'],
         period: {
             start: {
                 year: 2020,
                 month: '01'
             },
             end: {
-                year: 2021,
+                year: 2022,
                 month: '12'
             }
         }
     });
 
     const conditionFilter = BPASIAManyPrimaryConditionsCriteria.set(cid.list);
-    const cityFilter = BPASIASingleCityCriteria.set(city);
+    const cityFilter = BPASIAManyCitiesCriteria.set(cities);
     const docOrigin = BPASIAManyOriginDocumentCriteria.set(['C', 'I']);
 
     sia.exec('file', [conditionFilter, cityFilter, docOrigin], insert, './dist/app/SIA/SIAJob.js')
 }
 */
+
 /* 
-sinan: {
-    const storage = database.document.mongo('mongodb://localhost:27017/', 'sinan', 'iexo');
-    const insert = async (record: any) => {
-        await storage.collection.insertOne(record);
-    };
-    const gateway = await SINANFTPGateway.getInstanceOf(ftp!);
-    const sinan = SINAN.init(gateway, 5);
-    await sinan.subset({
-        src: 'IEXO' as SINANDatasource,
-        states: ['BR'],
+sihsus: {
+    const storage = database.document.mongo('mongodb://localhost:27017/', 'sihsus', 'dcnt');
+    const insert = async (record: any) => await storage.collection.insertOne(record);
+    const gateway = await SIHFTPGateway.getInstanceOf(ftp!);
+    const sih = SIH.init(gateway, 5);
+
+    await sih.subset({
+        src: "RD",
+        states: ['RJ', 'ES', 'MG', 'SP'],
         period: {
             start: {
-                year: 2020
+                year: 2008,
+                month: '01'
             },
             end: {
-                year: 2021
+                year: 2022,
+                month: '12'
             }
         }
     })
-    const conditionFilter = NotificationSINANManyPrimaryConditionsCriteria.set(cid.list);
-    const cityFilter = NotificationSINANSingleCityCriteria.set(city);
+    
+    const conditionFilter = AIHSIHManyPrimaryConditionsCriteria.set(cid.list);
+    const cityFilter = AIHSIHManyCitiesCriteria.set(cities);
 
-    sinan.exec('file', [ conditionFilter, cityFilter ], insert, './dist/app/SINAN/SINANJob.js')
+    sih.exec('file', [conditionFilter, cityFilter], insert, './dist/app/SIH/SIHJob.js')
 }
 */
+
+
+sim: {
+    const storage = database.document.mongo('mongodb://localhost:27017/', 'sim', 'dcnt');
+    const insert = async (record: any) => await storage.collection.insertOne(record);
+    const gateway = await SIMFTPGateway.getInstanceOf(ftp!);
+    const sim = SIM.init(gateway, 5);
+    
+    await sim.subset({
+        src: 'DO',
+        states: ['RJ', 'ES', 'MG', 'SP'],
+        period: {
+            start: {
+                year: 2008
+            },
+            end: {
+                year: 2022
+            }
+        }
+    })
+
+    const conditionFilter = DOSIMManyPrimaryConditionsCriteria.set(cid.list);
+    const cityFilter = DOSIMManyCitiesCriteria.set(cities)
+    
+    sim.exec('file', [conditionFilter, cityFilter], insert, './dist/app/SIM/SIMJob.js')
+}

@@ -1,5 +1,7 @@
 #!/bin/bash
 
-rm -rf *.dbc
+rm -rf *.dbc *.DBC
 cat *.dbc.json > summary.json
-rm -rf *.dbc.json
+cat *.DBC.json >> summary.json
+rm -rf *.dbc.json 
+rm -rf *.DBC.json

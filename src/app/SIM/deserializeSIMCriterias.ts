@@ -16,12 +16,15 @@
     limitations under the License.
 */
 import { Criteria } from "../../core/Criteria.js"
+import { DOSIMManyCitiesCriteria } from "../../interface/SIM/filter/SIMManyCitiesCriteria.js";
 import { DOSIMManyPrimaryConditionsCriteria } from "../../interface/SIM/filter/SIMManyPrimaryDiseaseCriteria.js";
 
 export function deserializeSIMCriteria(criteria: Criteria<Notification>) {
     switch (criteria.name) {
         case 'DOSIMManyPrimaryConditionsCriteria':
             return DOSIMManyPrimaryConditionsCriteria.set(criteria.array!)
+        case 'DOSIMManyCitiesCriteria':
+            return DOSIMManyCitiesCriteria.set(criteria.array!)
         default:
             break;
     }

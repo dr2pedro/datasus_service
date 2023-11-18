@@ -79,13 +79,9 @@ export class SIMFTPGateway extends DATASUSGenericFTPGateway<SIMSubset> {
                 return list.filter((i: { name: string; }) => i.name.startsWith(input.src+year))
             }
         }).flat();
-
-        console.log(seq)
-        console.log(list)
-
         return  display === 'full' ? 
                 list.filter((i: { name: string; }) => i.name.startsWith(input.src)) : 
-                list.filter((i: { name: string; }) => i.name.startsWith(input.src)).map((item: { name: any; }) => item.name) 
+                list.filter((i: { name: string; }) => i.name.startsWith(input.src)).map((item: { name: any }) => item.name) 
     }
 
     /**
@@ -95,7 +91,7 @@ export class SIMFTPGateway extends DATASUSGenericFTPGateway<SIMSubset> {
      *  @returns { void }
      */
     override async get(file: string, dest?: string) {
-        const match = file.match(/^([A-Z]+)([A-Z]+)(\d+).dbc$/);
+        const match = file.match(/^([A-Z]+)([A-Z]+)(\d+).(dbc|DBC)$/);
         const type = parseInt(match![3]) <= (new Date().getFullYear() - 2) ? 'CID10' : 'PRELIM';
         const doresOrDofet =    file.startsWith('DORES') ? 'DOFET' :
                                 file.startsWith('DOFET') ? 'DOFET' :

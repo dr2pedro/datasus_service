@@ -43,9 +43,9 @@ import { DOSIMManyCitiesCriteria } from "./interface/SIM/filter/SIMManyCitiesCri
 
 const ftp = await BasicFTPClient.connect('ftp.datasus.gov.br');
 const cid = await ICD10.load();
+
 cid
     .block('I')
-    .block('F')
     .block('C', { start: '00', end: '979'})
     .block('J', { start: '30', end: '989'})
     .block('E', { start: '10', end: '149'})
@@ -53,7 +53,6 @@ cid
 const citiesJson = readFileSync('./assets/gd_cities.json');
 const cities = JSON.parse(citiesJson.toString());
 
-/* 
 siasus: {
     const storage = database.document.mongo('mongodb://localhost:27017/', 'siasus', 'dcnt');
     const insert = async (record: any) => await storage.collection.insertOne(record);
@@ -64,7 +63,7 @@ siasus: {
         states: ['RJ', 'ES', 'MG', 'SP'],
         period: {
             start: {
-                year: 2020,
+                year: 2008,
                 month: '01'
             },
             end: {
@@ -80,7 +79,7 @@ siasus: {
 
     sia.exec('file', [conditionFilter, cityFilter, docOrigin], insert, './dist/app/SIA/SIAJob.js')
 }
-*/
+
 
 /* 
 sihsus: {
@@ -111,7 +110,7 @@ sihsus: {
 }
 */
 
-
+/* 
 sim: {
     const storage = database.document.mongo('mongodb://localhost:27017/', 'sim', 'dcnt');
     const insert = async (record: any) => await storage.collection.insertOne(record);
@@ -136,3 +135,5 @@ sim: {
     
     sim.exec('file', [conditionFilter, cityFilter], insert, './dist/app/SIM/SIMJob.js')
 }
+
+ */
